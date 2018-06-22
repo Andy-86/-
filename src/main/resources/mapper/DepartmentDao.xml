@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.andy.girl.mapper.DepartmentDao">
+    <!--auto generated Code-->
+    <resultMap id="AllColumnMap" type="com.andy.girl.mapper.Department">
+        <result column="did" property="did"/>
+        <result column="departname" property="departname"/>
+    </resultMap>
+
+    <!--auto generated Code-->
+    <sql id="all_column">
+        `did`,
+        `departname`
+    </sql>
+
+    <!--auto generated Code-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pojo.did">
+        INSERT INTO department (
+            `did`,
+            `departname`
+        ) VALUES (
+            #{pojo.did},
+            #{pojo.departname}
+        )
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.did">
+        INSERT INTO department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.did!=null"> `did`,</if>
+            <if test="pojo.departname!=null"> `departname`,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.did!=null">#{pojo.did},</if>
+            <if test="pojo.departname!=null">#{pojo.departname},</if>
+        </trim>
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertList">
+        INSERT INTO department (
+        <include refid="all_column"/>
+        )VALUES
+        <foreach collection="pojos" item="pojo" index="index" separator=",">
+            (
+            #{pojo.did},
+            #{pojo.departname}
+            )
+        </foreach>
+    </insert>
+
+    <!--auto generated Code-->
+    <update id="update">
+        UPDATE department
+        <set>
+            <if test="pojo.did != null"> `did` = #{pojo.did}, </if>
+            <if test="pojo.departname != null"> `departname` = #{pojo.departname} </if>
+        </set>
+        WHERE did = #{pojo.did}
+    </update>
+
+    <select id="findall" resultMap="AllColumnMap">
+        SELECT * FROM Department
+    </select>
+</mapper>
+

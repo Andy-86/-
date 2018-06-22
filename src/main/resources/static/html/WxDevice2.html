@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>我的设备</title>
+</head>
+<link rel="stylesheet" href="/style/weui.min.css">
+<link rel="stylesheet" href="https://weui.io/example.css">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<body>
+<div class="weui-search-bar" id="searchBar">
+    <form class="weui-search-bar__form" id="search_form" action="javascript:void(0)">
+        <div class="weui-search-bar__box">
+            <i class="weui-icon-search"></i>
+            <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+            <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+        </div>
+        <label class="weui-search-bar__label" id="searchText">
+            <i class="weui-icon-search"></i>
+            <span>搜索</span>
+        </label>
+    </form>
+    <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+</div>
+<div id="searchResult" class="weui-cells">
+    <a class="weui-cell weui-cell_access" href="/html/WxCheckDevicesResult2.html">
+        <div class="weui-cell__bd">
+            <h4>**********餐厅     状态正常</h4>
+            <p>地址：**********************</p>
+            <p>设备类型：A </p>
+            <p>    </p>
+            <p>最近7天排油量：XX公斤</p>
+        </div>
+        <div class="weui-cell__ft">
+        </div>
+    </a>
+    <a class="weui-cell weui-cell_access" href="/html/WxCheckDevicesResult2.html">
+        <div class="weui-cell__bd">
+            <h4>**********餐厅     状态正常</h4>
+            <p>地址：**********************</p>
+            <p>设备类型：A  </p>
+            <p>    </p>
+            <p>最近7天排油量：XX公斤</p>
+        </div>
+        <div class="weui-cell__ft">
+        </div>
+    </a>
+    <a class="weui-cell weui-cell_access" href="/html/WxCheckDevicesResult2.html">
+        <div class="weui-cell__bd">
+            <h4>**********餐厅     状态正常</h4>
+            <p>地址：**********************</p>
+            <p>设备类型：A</p>
+            <p>     </p>
+            <p>最近7天排油量：XX公斤</p>
+        </div>
+        <div class="weui-cell__ft">
+        </div>
+    </a>
+</div>
+</body>
+<script type="text/javascript" class="searchbar js_show">
+    $(function(){
+        var $searchBar = $('#searchBar'),
+            $searchResult = $('#searchResult'),
+            $searchText = $('#searchText'),
+            $searchInput = $('#searchInput'),
+            $searchClear = $('#searchClear'),
+            $searchCancel = $('#searchCancel');
+            $search_form = $('#search_form');
+
+        function hideSearchResult(){
+            $searchResult.hide();
+            $searchInput.val('');
+        }
+        function cancelSearch(){
+            hideSearchResult();
+            $searchBar.removeClass('weui-search-bar_focusing');
+            $searchText.show();
+        }
+
+        $searchText.on('click', function(){
+            $searchBar.addClass('weui-search-bar_focusing');
+            $searchInput.focus();
+        });
+        $searchInput
+            .on('blur', function () {
+                if(!this.value.length) cancelSearch();
+            })
+            .on('input', function(){
+                if(this.value.length) {
+                    $searchResult.show();
+                } else {
+                    $searchResult.hide();
+                }
+            })
+
+        ;
+        $searchClear.on('click', function(){
+            hideSearchResult();
+            $searchInput.focus();
+        });
+        $searchCancel.on('click', function(){
+            cancelSearch();
+            $searchInput.blur();
+        });
+        $search_form.submit(function () {
+            $('#searchResult').text("");
+            $('#searchResult').append("<a class=\"weui-cell weui-cell_access\" href=\"/html/WxCheckDevicesResult2.html\">\n" +
+                "        <div class=\"weui-cell__bd\">\n" +
+                "            <h4>**********餐厅     状态正常</h4>\n" +
+                "            <p>地址：**********************</p>\n" +
+                "            <p>设备类型：A</p>\n" +
+                "            <p>     </p>\n" +
+                "            <p>最近7天排油量：XX公斤</p>\n" +
+                "        </div>\n" +
+                "        <div class=\"weui-cell__ft\">\n" +
+                "        </div>\n" +
+                "    </a>");
+
+        });
+
+    });
+</script>
+</html>

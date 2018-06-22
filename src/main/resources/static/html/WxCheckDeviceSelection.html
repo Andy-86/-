@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>根据条件查询设备</title>
+</head>
+<link rel="stylesheet" href="/style/weui.min.css">
+<link rel="stylesheet" href="http://weui.io/weui.css">
+<link rel="stylesheet" href="https://weui.io/example.css">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<body>
+<div class="page__hd">
+    <h1 class="page__title">查看设备</h1>
+    <p class="page__desc"></p>
+</div>
+<div class="weui-cells__title">基本条件</div>
+<div class="weui-cells weui-cells_form" id="BaseInfo" >
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">城市名称</label></div>
+        <div class="weui-cell__bd">
+            <input name="city" class="weui-input" type="text" placeholder="请输入城市名称">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">餐厅名称</label></div>
+        <div class="weui-cell__bd">
+            <input name="restaurant" class="weui-input" type="text" placeholder="请输入餐厅名称">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">客户编号</label></div>
+        <div class="weui-cell__bd">
+            <input name="id" class="weui-input" type="text" placeholder="请输入客户编号">
+        </div>
+    </div>
+
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">设备号</label></div>
+        <div class="weui-cell__bd">
+            <input name="device" class="weui-input" type="text" placeholder="请输入设备号">
+        </div>
+    </div>
+
+</div>
+<div class="weui-cells__title">日期</div>
+<div class="weui-cells weui-cells_form">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label for="" class="weui-label">开始日期</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="datetime-local" value="" placeholder="">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label for="" class="weui-label">结束日期</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="datetime-local" value="" placeholder="">
+        </div>
+    </div>
+</div>
+<div class="weui-btn-area">
+    <a class="weui-btn weui-btn_primary" href="javascript:" id="showTooltips">确定</a>
+</div>
+<div id="loadingToast" style="display:none;">
+    <div class="weui-mask_transparent"></div>
+    <div class="weui-toast">
+        <i class="weui-loading weui-icon_toast"></i>
+        <p class="weui-toast__content">数据加载中</p>
+    </div>
+</div>
+</body>
+<script>
+    // loading
+    $(function(){
+        var $loadingToast = $('#loadingToast');
+        $('#showTooltips').on('click', function(){
+            // if ($loadingToast.css('display') != 'none') return;
+            //
+            // $loadingToast.fadeIn(100);
+            // setTimeout(function () {
+            //     $loadingToast.fadeOut(100);
+            // }, 2000);
+            var id="BaseInfo";
+            var form = document.getElementById(id);//获取要提交的div
+            var inputs = form.getElementsByTagName("input");//获得想要提交的所有div
+            var object = new Object();//创建一个存放数据的对象
+            for(var i=0;i<inputs.length;i++){
+                object[inputs[i].getAttribute("name")]=inputs[i].value;//动态生成数据的键值对
+            }
+            var jsonData = JSON.stringify(object);//根据数据生成json数据
+            //ajax发送数据
+            $.ajax({
+                url:'/submit',
+                type:'post',
+                data:object,
+                contentType : "application/x-www-form-urlencoded",
+                dataType: "json",
+                success:function (data) {
+                    alert(data);
+                }
+            });
+        });
+    });
+</script>
+
+<script type="text/html" id="tpl_toast">
+
+    <script type="text/javascript">
+        // toast
+        $(function(){
+            var $toast = $('#toast');
+            $('#showToast').on('click', function(){
+                if ($toast.css('display') != 'none') return;
+
+                $toast.fadeIn(100);
+                setTimeout(function () {
+                    $toast.fadeOut(100);
+                }, 2000);
+            });
+        });
+
+        // loading
+        $(function(){
+            var $loadingToast = $('#loadingToast');
+            $('#showLoadingToast').on('click', function(){
+                if ($loadingToast.css('display') != 'none') return;
+
+                $loadingToast.fadeIn(100);
+                setTimeout(function () {
+                    $loadingToast.fadeOut(100);
+                }, 2000);
+            });
+        });
+</script>
+</html>

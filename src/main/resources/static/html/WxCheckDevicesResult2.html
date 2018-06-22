@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>设备状态信息</title>
+</head>
+<link rel="stylesheet" href="/style/weui.min.css">
+<link rel="stylesheet" href="https://weui.io/example.css">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<body>
+<div class="page__hd">
+    <h1 class="page__title">XXXXXXXX餐厅</h1>
+    <p class="page__desc"></p>
+</div>
+<div class="weui-cells weui-cells_form">
+
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label for="" class="weui-label">开始时间</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="datetime-local" value="" placeholder="">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label for="" class="weui-label">结束时间</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="datetime-local" value="" placeholder="">
+        </div>
+    </div>
+    <div class="page__hd">
+        <p class="page__desc"></p>
+    </div>
+    <div style="margin: 10px;">
+    <a id="search" href="javascript:;" class="weui-btn weui-btn_primary">查询</a>
+    </div>
+</div>
+
+<div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+</div>
+
+<div class="weui-cells" id="result" >
+<div class="weui-cells__title">水泵A</div>
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>设备实时状态</p>
+        </div>
+        <div class="weui-cell__ft" id="equipment_state_a">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>工作时间</p>
+        </div>
+        <div class="weui-cell__ft" id="work_time_a">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>累计污水处理量</p>
+        </div>
+        <div class="weui-cell__ft" id="tatol_dispose_a"> 说明文字</div>
+    </div>
+</div>
+
+<div class="weui-cells__title">水泵B</div>
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>设备实时状态</p>
+        </div>
+        <div class="weui-cell__ft" id="equipment_state_b">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>工作时间</p>
+        </div>
+        <div class="weui-cell__ft" id="work_time_b">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>累计污水处理量</p>
+        </div>
+        <div class="weui-cell__ft" id="tatol_dispose_b">说明文字</div>
+    </div>
+</div>
+
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>水箱液位 </p>
+        </div>
+        <div class="weui-cell__ft" id="water_level ">说明文字</div>
+    </div>
+</div>
+
+<div class="weui-cells__title">加热器</div>
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>状态 </p>
+        </div>
+        <div class="weui-cell__ft" id="heater_state">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>实时温度</p>
+        </div>
+        <div class="weui-cell__ft" id="real_time_temperaute">说明文字</div>
+    </div>
+</div>
+
+
+<div class="weui-cells__title">排油阀</div>
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>状态 </p>
+        </div>
+        <div class="weui-cell__ft" id="oil_dispatcher_state">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>累计排油量</p>
+        </div>
+        <div class="weui-cell__ft" id="dispatcher_oil_amount">说明文字</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"></div>
+        <div class="weui-cell__bd">
+            <p>油桶实时重量</p>
+        </div>
+        <div class="weui-cell__ft" id="oil_real_time_weight">说明文字</div>
+    </div>
+</div>
+</div>
+</body>
+<script>
+    $(document).ready(function(){
+        $('#result').hide();
+        $('#search').click(function(){
+            $('#result').show();
+            $('#equipment_state_a').html("正在运行");
+        });
+    });
+</script>
+</html>

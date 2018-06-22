@@ -1,0 +1,1163 @@
+
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>修改签约</title>
+    <link rel="stylesheet" href="/style/weui.min.css">
+    <link rel="stylesheet" href="/style/example.css"/>
+</head>
+<body ontouchstart>
+<div class="weui-toptips weui-toptips_warn js_tooltips">错误提示</div>
+
+<div class="container" id="container"></div>
+
+<script type="text/html" id="tpl_home">
+    <div class="page">
+        <div class="page__hd">
+            <h1 class="page__title">签约</h1>
+            <p class="page__desc"></p>
+        </div>
+        <div class="weui-cells__title">餐厅名字</div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" placeholder="请输入餐厅名字">
+                </div>
+            </div>
+        </div>
+
+        <div class="weui-cells__title">餐厅地址</div>
+        <div class="weui-cells weui-cells_form">
+            <div class="weui-cell weui-cell_vcode">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="location_name" type="text" placeholder="请输入餐厅地址">
+                </div>
+                <div class="weui-cell__ft">
+                    <button id="getLocation" class="weui-vcode-btn">获取地址</button>
+                </div>
+            </div>
+        </div>
+        <div class="page__hd">
+            <h1 class="page__title"></h1>
+            <p class="page__desc"></p>
+        </div>
+
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <div class="weui-uploader">
+                    <div class="weui-uploader__hd">
+                        <p class="weui-uploader__title">餐厅照片上传</p>
+                        <div class="weui-uploader__info">0/2</div>
+                    </div>
+                    <div class="weui-uploader__bd">
+                        <ul class="weui-uploader__files" id="uploaderFiles1">
+                        </ul>
+                        <div class="weui-uploader__input-box">
+                            <input id="chosse1" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page__hd">
+            <h1 class="page__title"></h1>
+            <p class="page__desc"></p>
+        </div>
+        <div style="margin: 10px;">
+            <a id="next" data-id="license" href="javascript:;" class="weui-btn weui-btn_primary">下一页</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wx7f57fe14173081dc', // 必填，公众号的唯一标识
+            timestamp: 1528770953, // 必填，生成签名的时间戳
+            nonceStr: '770541460', // 必填，生成签名的随机串
+            signature: '33bc38ab7cb2b71f5fa74d5a78644458f1cfc2a4',// 必填，签名
+            jsApiList: [
+                // 所有要调用的 API 都要加到这个列表中
+                'chooseImage',
+                'previewImage',
+                'uploadImage',
+                'downloadImage',
+            ] // 必填，需要使用的JS接口列表
+        });
+
+        var serverids=new Object();
+
+        $(function(){
+            var winH = $(window).height();
+            var categorySpace = 10;
+
+            $('#next').on('click', function(){
+                var id = $(this).data('id');
+                // wx.openAddress({
+                //     success: function (res) {
+                //         var userName = res.userName; // 收货人姓名
+                //         var postalCode = res.postalCode; // 邮编
+                //         var provinceName = res.provinceName; // 国标收货地址第一级地址（省）
+                //         var cityName = res.cityName; // 国标收货地址第二级地址（市）
+                //         var countryName = res.countryName; // 国标收货地址第三级地址（国家）
+                //         var detailInfo = res.detailInfo; // 详细收货地址信息
+                //         var nationalCode = res.nationalCode; // 收货地址国家码
+                //         var telNumber = res.telNumber; // 收货人手机号码
+                //         alert(userName+" "+postalCode+" "+provinceName+" "+cityName+" "+countryName+" "+detailInfo)
+                //     }
+                // });
+
+                window.pageManager.go(id);
+            });
+        });
+
+
+        $('#getLocation').click( function() {
+            wx.getLocation({
+                type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                success: function (res) {
+                    var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                    var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                    var speed = res.speed; // 速度，以米/每秒计
+                    var accuracy = res.accuracy; // 位置精度
+
+                    var geocoder = new qq.maps.Geocoder({
+                        complete: function (result) {   //解析成功的回调函数
+                            var address = result.detail.address.substring(5);  //获取详细地址信息
+                            $('#location_name').val(address);
+                        }
+                    });
+                    geocoder.getAddress(new qq.maps.LatLng(latitude, longitude));
+
+
+                }
+            });
+        });
+        $('#chosse1').click( function() {
+            // 用来判断是不是ios
+            var ios = window.__wxjs_is_wkwebview;
+
+            // 选择图片
+            wx.chooseImage({
+                count:4, //一次允许选择几张图片
+                success: function (res) {
+                    var localIds = res.localIds;
+                    var i = 0;
+                    // 已选图片个数
+                    var length = localIds.length;
+                    // 执行图片上传
+                    var stroage=window.localStorage;
+                    upload();
+                    function upload() {
+                        if(ios) {
+                            wx.getLocalImgData({
+                                localId: localIds[i], // 图片的localID
+                                success: function (res) {
+                                    localData = res.localData; // localData是图片的base64数据，可以用img标签显示
+                                    // 展示预览图
+                                    var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                                    $('#uploaderFiles1').append($preview);
+                                    // 预览
+                                    $('.weui-uploader__file').click(function(){
+                                        var imgurl = $(this).attr('imgurl');
+                                        wx.previewImage({
+                                            current: imgurl, // 当前显示图片的http链接
+                                            urls: [imgurl] // 需要预览的图片http链接列表
+                                        });
+                                    });
+                                    // 上传动画
+                                    var progress = 0;
+                                    function uploading() {
+                                        progress = progress + 3;
+                                        $preview.find('.weui-uploader__file-content').text(progress + '%');
+                                        if (progress < 95 ) {
+                                            setTimeout(uploading, 10);
+                                        }
+                                    }
+                                    uploading();//执行上传动画
+                                    wx.uploadImage({
+                                        localId: localIds[i].toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                                        isShowProgressTips: 0, // 默认为1，显示进度提示
+                                        success: function (res) {
+
+                                            //ajax发送数据
+                                            $.ajax({
+                                                url:'/submit',
+                                                type:'post',
+                                                data:object,
+                                                contentType : "application/x-www-form-urlencoded",
+                                                dataType: "json",
+                                                success:function (data) {
+                                                }
+                                            });
+
+                                            if (i == length) {
+                                                $.toast("上传成功");
+                                            }
+                                            i++;
+                                            $preview.removeClass('weui-uploader__file_status');
+                                            // 上传成功
+                                            var server_id = $("input[name='server_id']");
+                                            if (server_id.val() == '') {
+                                                server_id.val(res.serverId);
+                                            }  else {
+                                                var str = server_id.val() + ',' + res.serverId;
+                                                server_id.val(str);
+                                            }
+                                            // 多张图片先判断还有没有要上传的
+                                            if (i < length) {
+                                                upload();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            localData = localIds[i];
+                            // 展示预览图
+                            var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                            $('#uploaderFiles1').append($preview);
+                            $('.weui-uploader__file').click(function(){
+                                var imgurl = $(this).attr('imgurl');
+                                wx.previewImage({
+                                    current: imgurl, // 当前显示图片的http链接
+                                    urls: [imgurl] // 需要预览的图片http链接列表
+                                });
+                            });
+                            // 上传动画
+                            var progress = 0;
+                            function uploading() {
+                                progress = progress + 3;
+                                $preview.find('.weui-uploader__file-content').text(progress + '%');
+                                if (progress < 95 ) {
+                                    setTimeout(uploading, 10);
+                                }
+                            }
+                            uploading();//执行上传动画
+                            var object = new Object();
+                            wx.uploadImage({
+                                localId: localData.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                                isShowProgressTips: 0, // 默认为1，显示进度提示
+                                success: function (res) {
+
+                                    object["myid"]=res.serverId;
+
+                                    //ajax发送数据
+                                    $.ajax({
+                                        url:'/submit',
+                                        type:'post',
+                                        data:object,
+                                        contentType : "application/x-www-form-urlencoded",
+                                        dataType: "json",
+                                        success:function (data) {
+                                        }
+                                    });
+
+                                    serverids["a"+i]=res.serverId;
+
+                                    i++;
+                                    // $.toast("上传成功",1000);
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    // 上传成功把server_id拼接起来再控制器保存到本地
+                                    var server_id = $("input[name='server_id']");
+                                    if (server_id.val() == '') {
+                                        server_id.val(res.serverId);
+                                    }  else {
+                                        var str = server_id.val() + ',' + res.serverId;
+                                        server_id.val(str);
+                                    }
+                                    // 多张图片先判断还有没有要上传的
+                                    if (i < length) {
+                                        upload();
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        });
+</script>
+</script>
+//营业执照
+<script type="text/html" id="tpl_license">
+    <div class="page">
+    <div class="page__hd">
+    <h1 class="page__title">签约</h1>
+    <p class="page__desc"></p>
+    </div>
+    <div class="weui-cells__title">营业执照号</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入营业执照号">
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <div class="weui-uploader">
+    <div class="weui-uploader__hd">
+    <p class="weui-uploader__title">营业执照图片上传</p>
+    <div class="weui-uploader__info">0/2</div>
+    </div>
+    <div class="weui-uploader__bd">
+    <ul class="weui-uploader__files" id="uploaderFiles2">
+    </ul>
+    <div class="weui-uploader__input-box">
+    <input id="chosse2" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+    <div style="margin: 10px;">
+    <a id="next2"  data-id="communicate" href="javascript:;" class="weui-btn weui-btn_primary" >下一页</a>
+    </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        var winH = $(window).height();
+        var categorySpace = 10;
+
+        $('#next2').on('click', function(){
+            var id = $(this).data('id');
+            window.pageManager.go(id);
+        });
+    });
+
+$('#chosse2').click( function() {
+    // 用来判断是不是ios
+    var ios = window.__wxjs_is_wkwebview;
+
+    // 选择图片
+    wx.chooseImage({
+        count:4, //一次允许选择几张图片
+        success: function (res) {
+            var localIds = res.localIds;
+            var i = 0;
+            // 已选图片个数
+            var length = localIds.length;
+
+            var stroage=window.localStorage;
+            // 执行图片上传
+            upload();
+            function upload() {
+                if(ios) {
+                    wx.getLocalImgData({
+                        localId: localIds[i], // 图片的localID
+                        success: function (res) {
+                            localData = res.localData; // localData是图片的base64数据，可以用img标签显示
+                            // 展示预览图
+                            var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                            $('#uploaderFiles2').append($preview);
+                            // 预览
+                            $('.weui-uploader__file').click(function(){
+                                var imgurl = $(this).attr('imgurl');
+                                wx.previewImage({
+                                    current: imgurl, // 当前显示图片的http链接
+                                    urls: [imgurl] // 需要预览的图片http链接列表
+                                });
+                            });
+                            // 上传动画
+                            var progress = 0;
+                            function uploading() {
+                                progress = progress + 3;
+                                $preview.find('.weui-uploader__file-content').text(progress + '%');
+                                if (progress < 95 ) {
+                                    setTimeout(uploading, 10);
+                                }
+                            }
+                            uploading();//执行上传动画
+                            wx.uploadImage({
+                                localId: localIds[i].toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                                isShowProgressTips: 0, // 默认为1，显示进度提示
+                                success: function (res) {
+                                    //存储serverid
+                                    serverids["b"+i]=res.serverId;
+
+                                    if (i == length) {
+                                        $.toast("上传成功");
+                                    }
+                                    i++;
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    // 上传成功
+                                    var server_id = $("input[name='server_id']");
+                                    if (server_id.val() == '') {
+                                        server_id.val(res.serverId);
+                                    }  else {
+                                        var str = server_id.val() + ',' + res.serverId;
+                                        server_id.val(str);
+                                    }
+                                    // 多张图片先判断还有没有要上传的
+                                    if (i < length) {
+                                        upload();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    localData = localIds[i];
+                    // 展示预览图
+                    var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                    $('#uploaderFiles2').append($preview);
+                    $('.weui-uploader__file').click(function(){
+                        var imgurl = $(this).attr('imgurl');
+                        wx.previewImage({
+                            current: imgurl, // 当前显示图片的http链接
+                            urls: [imgurl] // 需要预览的图片http链接列表
+                        });
+                    });
+                    // 上传动画
+                    var progress = 0;
+                    function uploading() {
+                        progress = progress + 3;
+                        $preview.find('.weui-uploader__file-content').text(progress + '%');
+                        if (progress < 95 ) {
+                            setTimeout(uploading, 10);
+                        }
+                    }
+                    uploading();//执行上传动画
+                    wx.uploadImage({
+                        localId: localData.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                        isShowProgressTips: 0, // 默认为1，显示进度提示
+                        success: function (res) {
+
+                            serverids["b"+i]=res.serverId;
+                            i++;
+                            // $.toast("上传成功",1000);
+                            $preview.removeClass('weui-uploader__file_status');
+                            // 上传成功把server_id拼接起来再控制器保存到本地
+                            var server_id = $("input[name='server_id']");
+                            if (server_id.val() == '') {
+                                server_id.val(res.serverId);
+                            }  else {
+                                var str = server_id.val() + ',' + res.serverId;
+                                server_id.val(str);
+                            }
+                            // 多张图片先判断还有没有要上传的
+                            if (i < length) {
+                                upload();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    });
+});
+</script>
+</script>
+//法人
+<script type="text/html" id="tpl_communicate">
+    <div class="page">
+    <div class="page__hd">
+    <h1 class="page__title">签约</h1>
+    <p class="page__desc"></p>
+    </div>
+    <div class="weui-cells__title">法人姓名</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入法人姓名">
+    </div>
+    </div>
+    </div>
+
+    <div class="weui-cells__title">法人手机号</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入法人手机号">
+    </div>
+    </div>
+    </div>
+
+    <div class="weui-cells__title">法人身份证号</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入法人法人身份证号">
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <div class="weui-uploader">
+    <div class="weui-uploader__hd">
+    <p class="weui-uploader__title">身份证图片上传</p>
+    <div class="weui-uploader__info">0/2</div>
+    </div>
+    <div class="weui-uploader__bd">
+    <ul class="weui-uploader__files" id="uploaderFiles3">
+    </ul>
+    <div class="weui-uploader__input-box">
+    <input id="chosse3" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+
+    <div style="margin: 10px;">
+    <a id="next3" data-id="responsibility" href="javascript:;" class="weui-btn weui-btn_primary">下一页</a>
+    </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        var winH = $(window).height();
+        var categorySpace = 10;
+
+        $('#next3').on('click', function(){
+            var id = $(this).data('id');
+            window.pageManager.go(id);
+        });
+    });
+
+$('#chosse3').click( function() {
+    // 用来判断是不是ios
+    var ios = window.__wxjs_is_wkwebview;
+
+    // 选择图片
+    wx.chooseImage({
+        count:4, //一次允许选择几张图片
+        success: function (res) {
+            var localIds = res.localIds;
+            var i = 0;
+            // 已选图片个数
+            var length = localIds.length;
+
+            var stroage=window.localStorage;
+            // 执行图片上传
+            upload();
+            function upload() {
+                if(ios) {
+                    wx.getLocalImgData({
+                        localId: localIds[i], // 图片的localID
+                        success: function (res) {
+                            localData = res.localData; // localData是图片的base64数据，可以用img标签显示
+                            // 展示预览图
+                            var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                            $('#uploaderFiles3').append($preview);
+                            // 预览
+                            $('.weui-uploader__file').click(function(){
+                                var imgurl = $(this).attr('imgurl');
+                                wx.previewImage({
+                                    current: imgurl, // 当前显示图片的http链接
+                                    urls: [imgurl] // 需要预览的图片http链接列表
+                                });
+                            });
+                            // 上传动画
+                            var progress = 0;
+                            function uploading() {
+                                progress = progress + 3;
+                                $preview.find('.weui-uploader__file-content').text(progress + '%');
+                                if (progress < 95 ) {
+                                    setTimeout(uploading, 10);
+                                }
+                            }
+                            uploading();//执行上传动画
+                            wx.uploadImage({
+                                localId: localIds[i].toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                                isShowProgressTips: 0, // 默认为1，显示进度提示
+                                success: function (res) {
+
+                                    //存储serverid
+                                    serverids["c"+i]=res.serverId;
+
+                                    if (i == length) {
+                                        $.toast("上传成功");
+                                    }
+                                    i++;
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    // 上传成功
+                                    var server_id = $("input[name='server_id']");
+                                    if (server_id.val() == '') {
+                                        server_id.val(res.serverId);
+                                    }  else {
+                                        var str = server_id.val() + ',' + res.serverId;
+                                        server_id.val(str);
+                                    }
+                                    // 多张图片先判断还有没有要上传的
+                                    if (i < length) {
+                                        upload();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    localData = localIds[i];
+                    // 展示预览图
+                    var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                    $('#uploaderFiles3').append($preview);
+                    $('.weui-uploader__file').click(function(){
+                        var imgurl = $(this).attr('imgurl');
+                        wx.previewImage({
+                            current: imgurl, // 当前显示图片的http链接
+                            urls: [imgurl] // 需要预览的图片http链接列表
+                        });
+                    });
+                    // 上传动画
+                    var progress = 0;
+                    function uploading() {
+                        progress = progress + 3;
+                        $preview.find('.weui-uploader__file-content').text(progress + '%');
+                        if (progress < 95 ) {
+                            setTimeout(uploading, 10);
+                        }
+                    }
+                    uploading();//执行上传动画
+                    wx.uploadImage({
+                        localId: localData.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                        isShowProgressTips: 0, // 默认为1，显示进度提示
+                        success: function (res) {
+
+                            //存储serverid
+                            serverids["c"+i]=res.serverId;
+
+                            i++;
+                            // $.toast("上传成功",1000);
+                            $preview.removeClass('weui-uploader__file_status');
+                            // 上传成功把server_id拼接起来再控制器保存到本地
+                            var server_id = $("input[name='server_id']");
+                            if (server_id.val() == '') {
+                                server_id.val(res.serverId);
+                            }  else {
+                                var str = server_id.val() + ',' + res.serverId;
+                                server_id.val(str);
+                            }
+                            // 多张图片先判断还有没有要上传的
+                            if (i < length) {
+                                upload();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    });
+});
+</script>
+</script>
+
+
+//负责人
+<script type="text/html" id="tpl_responsibility">
+    <div class="page">
+    <div class="page__hd">
+    <h1 class="page__title">签约</h1>
+    <p class="page__desc"></p>
+    </div>
+    <div class="weui-cells weui-cells_checkbox">
+    <label class="weui-cell weui-check__label" for="s11">
+    <div class="weui-cell__hd">
+    <input type="checkbox" class="weui-check" name="checkbox1" id="s11" checked="checked">
+    <i class="weui-icon-checked"></i>
+    </div>
+    <div class="weui-cell__bd">
+    <p>法人就是负责人</p>
+    </div>
+    </label>
+    </div>
+
+    <div class="weui-cells__title">负责人姓名</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入负责人姓名">
+    </div>
+    </div>
+    </div>
+
+    <div class="weui-cells__title">负责人手机号</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入负责人手机号">
+    </div>
+    </div>
+    </div>
+
+    <div class="weui-cells__title">获取验证码</div>
+    <div class="weui-cells weui-cells_form">
+    <div class="weui-cell weui-cell_vcode">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入验证码">
+    </div>
+    <div class="weui-cell__ft">
+    <button class="weui-vcode-btn">获取验证码</button>
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <div class="weui-uploader">
+    <div class="weui-uploader__hd">
+    <p class="weui-uploader__title">负责人上传</p>
+    <div class="weui-uploader__info">0/2</div>
+    </div>
+    <div class="weui-uploader__bd">
+    <ul class="weui-uploader__files" id="uploaderFiles4">
+    </ul>
+    <div class="weui-uploader__input-box">
+    <input id="chosse4" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <div class="weui-uploader">
+    <div class="weui-uploader__hd">
+    <p class="weui-uploader__title">法人授权书照片</p>
+    <div class="weui-uploader__info">0/2</div>
+    </div>
+    <div class="weui-uploader__bd">
+    <ul class="weui-uploader__files" id="uploaderFiles5">
+    </ul>
+    <div class="weui-uploader__input-box">
+    <input id="chosse5" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+    <div style="margin: 10px;">
+    <a id="next4" data-id="salesman" href="javascript:;" class="weui-btn weui-btn_primary">下一页</a>
+    </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        var winH = $(window).height();
+        var categorySpace = 10;
+
+        $('#next4').on('click', function(){
+            var id = $(this).data('id');
+            window.pageManager.go(id);
+        });
+    });
+var stroage=window.localStorage;
+$('#chosse4').click( function() {
+    // 用来判断是不是ios
+    var ios = window.__wxjs_is_wkwebview;
+    // 选择图片
+    wx.chooseImage({
+        count:4, //一次允许选择几张图片
+        success: function (res) {
+            var localIds = res.localIds;
+            var i = 0;
+            // 已选图片个数
+            var length = localIds.length;
+            // 执行图片上传
+            upload();
+            function upload() {
+                if(ios) {
+                    wx.getLocalImgData({
+                        localId: localIds[i], // 图片的localID
+                        success: function (res) {
+                            localData = res.localData; // localData是图片的base64数据，可以用img标签显示
+                            // 展示预览图
+                            var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                            $('#uploaderFiles4').append($preview);
+                            // 预览
+                            $('.weui-uploader__file').click(function(){
+                                var imgurl = $(this).attr('imgurl');
+                                wx.previewImage({
+                                    current: imgurl, // 当前显示图片的http链接
+                                    urls: [imgurl] // 需要预览的图片http链接列表
+                                });
+                            });
+                            // 上传动画
+                            var progress = 0;
+                            function uploading() {
+                                progress = progress + 3;
+                                $preview.find('.weui-uploader__file-content').text(progress + '%');
+                                if (progress < 95 ) {
+                                    setTimeout(uploading, 10);
+                                }
+                            }
+                            uploading();//执行上传动画
+                            wx.uploadImage({
+                                localId: localIds[i].toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                                isShowProgressTips: 0, // 默认为1，显示进度提示
+                                success: function (res) {
+                                    //存储serverid
+                                    serverids["d"+i]=res.serverId;
+
+                                    if (i == length) {
+                                        $.toast("上传成功");
+                                    }
+                                    i++;
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    // 上传成功
+                                    var server_id = $("input[name='server_id']");
+                                    if (server_id.val() == '') {
+                                        server_id.val(res.serverId);
+                                    }  else {
+                                        var str = server_id.val() + ',' + res.serverId;
+                                        server_id.val(str);
+                                    }
+                                    // 多张图片先判断还有没有要上传的
+                                    if (i < length) {
+                                        upload();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    localData = localIds[i];
+                    // 展示预览图
+                    var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                    $('#uploaderFiles4').append($preview);
+                    $('.weui-uploader__file').click(function(){
+                        var imgurl = $(this).attr('imgurl');
+                        wx.previewImage({
+                            current: imgurl, // 当前显示图片的http链接
+                            urls: [imgurl] // 需要预览的图片http链接列表
+                        });
+                    });
+                    // 上传动画
+                    var progress = 0;
+                    function uploading() {
+                        progress = progress + 3;
+                        $preview.find('.weui-uploader__file-content').text(progress + '%');
+                        if (progress < 95 ) {
+                            setTimeout(uploading, 10);
+                        }
+                    }
+                    uploading();//执行上传动画
+                    wx.uploadImage({
+                        localId: localData.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                        isShowProgressTips: 0, // 默认为1，显示进度提示
+                        success: function (res) {
+
+                            //存储serverid
+                            serverids["d"+i]=res.serverId;
+
+                            i++;
+                            // $.toast("上传成功",1000);
+                            $preview.removeClass('weui-uploader__file_status');
+                            // 上传成功把server_id拼接起来再控制器保存到本地
+                            var server_id = $("input[name='server_id']");
+                            if (server_id.val() == '') {
+                                server_id.val(res.serverId);
+                            }  else {
+                                var str = server_id.val() + ',' + res.serverId;
+                                server_id.val(str);
+                            }
+                            // 多张图片先判断还有没有要上传的
+                            if (i < length) {
+                                upload();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    });
+});
+
+
+
+$('#chosse5').click( function() {
+    // 用来判断是不是ios
+    var ios = window.__wxjs_is_wkwebview;
+
+    // 选择图片
+    wx.chooseImage({
+        count:4, //一次允许选择几张图片
+        success: function (res) {
+            var localIds = res.localIds;
+            var i = 0;
+            // 已选图片个数
+            var length = localIds.length;
+            // 执行图片上传
+            upload();
+            function upload() {
+                if(ios) {
+                    wx.getLocalImgData({
+                        localId: localIds[i], // 图片的localID
+                        success: function (res) {
+                            localData = res.localData; // localData是图片的base64数据，可以用img标签显示
+                            // 展示预览图
+                            var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                            $('#uploaderFiles5').append($preview);
+                            // 预览
+                            $('.weui-uploader__file').click(function(){
+                                var imgurl = $(this).attr('imgurl');
+                                wx.previewImage({
+                                    current: imgurl, // 当前显示图片的http链接
+                                    urls: [imgurl] // 需要预览的图片http链接列表
+                                });
+                            });
+                            // 上传动画
+                            var progress = 0;
+                            function uploading() {
+                                progress = progress + 3;
+                                $preview.find('.weui-uploader__file-content').text(progress + '%');
+                                if (progress < 95 ) {
+                                    setTimeout(uploading, 10);
+                                }
+                            }
+                            uploading();//执行上传动画
+                            wx.uploadImage({
+                                localId: localIds[i].toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                                isShowProgressTips: 0, // 默认为1，显示进度提示
+                                success: function (res) {
+
+                                    //存储serverid
+                                    serverids["e"+i]=res.serverId;
+
+                                    if (i == length) {
+                                        $.toast("上传成功");
+                                    }
+                                    i++;
+                                    $preview.removeClass('weui-uploader__file_status');
+                                    // 上传成功
+                                    var server_id = $("input[name='server_id']");
+                                    if (server_id.val() == '') {
+                                        server_id.val(res.serverId);
+                                    }  else {
+                                        var str = server_id.val() + ',' + res.serverId;
+                                        server_id.val(str);
+                                    }
+                                    // 多张图片先判断还有没有要上传的
+                                    if (i < length) {
+                                        upload();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    localData = localIds[i];
+                    // 展示预览图
+                    var $preview = $('<li class="weui-uploader__file weui-uploader__file_status" style="background-image:url('+localData+')" imgurl = "'+localData+'"><div class="weui-uploader__file-content">0%</div></li>');
+                    $('#uploaderFiles5').append($preview);
+                    $('.weui-uploader__file').click(function(){
+                        var imgurl = $(this).attr('imgurl');
+                        wx.previewImage({
+                            current: imgurl, // 当前显示图片的http链接
+                            urls: [imgurl] // 需要预览的图片http链接列表
+                        });
+                    });
+                    // 上传动画
+                    var progress = 0;
+                    function uploading() {
+                        progress = progress + 3;
+                        $preview.find('.weui-uploader__file-content').text(progress + '%');
+                        if (progress < 95 ) {
+                            setTimeout(uploading, 10);
+                        }
+                    }
+                    uploading();//执行上传动画
+                    wx.uploadImage({
+                        localId: localData.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                        isShowProgressTips: 0, // 默认为1，显示进度提示
+                        success: function (res) {
+
+                            //存储serverid
+                            serverids["e"+i]=res.serverId;
+
+                            i++;
+                            // $.toast("上传成功",1000);
+                            $preview.removeClass('weui-uploader__file_status');
+                            // 上传成功把server_id拼接起来再控制器保存到本地
+                            var server_id = $("input[name='server_id']");
+                            if (server_id.val() == '') {
+                                server_id.val(res.serverId);
+                            }  else {
+                                var str = server_id.val() + ',' + res.serverId;
+                                server_id.val(str);
+                            }
+                            // 多张图片先判断还有没有要上传的
+                            if (i < length) {
+                                upload();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    });
+});
+</script>
+</script>
+
+
+//业务员
+<script type="text/html" id="tpl_salesman">
+    <div class="page">
+    <div class="page__hd">
+    <h1 class="page__title">签约</h1>
+    <p class="page__desc"></p>
+    </div>
+
+    <div class="weui-cells__title">嘉荣业务员工号</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入嘉荣业务员工号">
+    </div>
+    </div>
+    </div>
+
+    <div class="weui-cells__title">嘉荣业务姓名</div>
+    <div class="weui-cells">
+    <div class="weui-cell">
+    <div class="weui-cell__bd">
+    <input class="weui-input" type="text" placeholder="请输入嘉荣业务姓名">
+    </div>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+    <div class="weui-cells">
+    <div class="weui-cell__bd">
+    <select class="weui-select" name="select1">
+    <option selected="" value="1">A款</option>
+    <option value="2">B款</option>
+    <option value="3">C款</option>
+    </select>
+    </div>
+    </div>
+
+    <div class="page__hd">
+    <h1 class="page__title"></h1>
+    <p class="page__desc"></p>
+    </div>
+
+    <div style="margin: 10px;">
+    <a id="next5" data-id="read" href="javascript:;" class="weui-btn weui-btn_primary">下一页</a>
+    </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        var winH = $(window).height();
+        var categorySpace = 10;
+
+        $('#next5').on('click', function(){
+            var id = $(this).data('id');
+            window.pageManager.go(id);
+        });
+    });
+</script>
+</script>
+
+<script type="text/html" id="tpl_read">
+    <div class="page">
+    <div class="page__hd">
+    <h1 class="page__title">签约须知</h1>
+    <p class="page__desc"></p>
+    </div>
+    <div style="margin: 10px;">
+    <section>
+    <h3 align="center">1.1 节标题</h3>
+<p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat.**************************************************************
+**********************************************************************
+</p>
+<p>
+我确认我本人是餐厅负责人，我同意如上商务合作条款，并且点击同意表示合同签署。
+</p>
+</section>
+</div>
+<div style="margin: 10px;">
+    <a id="next6" data-id="success" href="javascript:;" class="weui-btn weui-btn_primary">同意</a>
+    </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        var winH = $(window).height();
+        var categorySpace = 10;
+
+
+        $('#next6').on('click', function(){
+            var id = $(this).data('id');
+            window.pageManager.go(id);
+            //存储serverid
+            var jsonData = JSON.stringify(serverids);//根据数据生成json数据
+            alert(jsonData);
+
+        });
+    });
+</script>
+</script>
+
+<script type="text/html" id="tpl_success">
+    <div class="page">
+    <div class="weui-msg">
+    <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+<div class="weui-msg__text-area">
+    <h2 class="weui-msg__title">修改成功</h2>
+    </div>
+<div class="weui-msg__opr-area">
+    <p class="weui-btn-area">
+    </p>
+    </div>
+    <div class="weui-msg__extra-area">
+    <div class="weui-footer">
+    <p class="weui-footer__links">
+    </p>
+    <p class="weui-footer__text">Copyright © 2008-2018 嘉荣环保</p>
+</div>
+</div>
+</div>
+</div>
+
+</script>
+
+<script type="text/javascript" src="<%=basePath%>resources/js/jquery-1.2.1.js"></script>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp&key=EPWBZ-W2XRP-SLQDB-VNPIN-HZ7BJ-PWBJZ&libraries=convertor"></script>
+<script type="text/javascript" src="<%=basePath%>resources/js/ajaxfileupload.js"></script>
+<script src="/js/zepto.min.js"></script>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script src="https://res.wx.qq.com/open/libs/weuijs/1.0.0/weui.min.js"></script>
+<script src="/js/example.js"></script>
+</body>
+</html>

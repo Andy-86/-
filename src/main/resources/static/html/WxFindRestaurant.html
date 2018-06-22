@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0"/>
+    <title>查找餐厅</title>
+</head>
+<link rel="stylesheet" href="/style/weui.min.css">
+<link rel="stylesheet" href="https://weui.io/example.css"/>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<body>
+<div class="page__hd">
+    <h1 class="page__title">查找餐厅</h1>
+    <p class="page__desc"></p>
+</div>
+<div class="weui-cells weui-cells_form">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">餐厅名称</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="text" placeholder="请输入餐厅名称"/>
+        </div>
+    </div>
+
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">客户编号</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="text" placeholder="请输入客户编号"/>
+        </div>
+    </div>
+
+
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">设备号</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="text" placeholder="请输入设备号"/>
+        </div>
+    </div>
+
+
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">城市名称</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="tel" placeholder="请输入城市名称"/>
+        </div>
+    </div>
+</div>
+<div class="weui-btn-area">
+    <a class="weui-btn weui-btn_primary" href="javascript:;" id="showTooltips">确定</a>
+</div>
+<div id="div1"><h2>使用 jQuery AJAX 修改文本内容</h2></div>
+<script>
+    $(document).ready(function() {
+        $("#showTooltips").click(
+            function(){
+                $.ajax({
+                    url:"/testAJAX",
+                    type:"GET",
+                    dataType:"text",
+                    success:function (data) {
+                        $("#div1").html(data);
+                    }
+
+                })
+        });
+    });
+</script>
+</body>
+</html>
