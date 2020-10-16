@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-10-16T14:06:39.933Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36" etag="EP0CB9OogTBTPch3ZC-q" version="13.8.0" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-16T14:14:25.194Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36" etag="srtVnZ07lcDTGdb-Se5Q" version="13.8.0" type="github">
   <diagram id="3-5V8wSNHy0x2rdLF35Z" name="第 1 页">
     <mxGraphModel dx="1426" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -48,6 +48,30 @@
               <mxPoint x="215" y="300" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-30" value="jvm管理内存" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#80FF00;" vertex="1" parent="1">
+          <mxGeometry x="680" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-31" value="Java堆内存" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="680" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-33" value="Xmx 最大堆内存" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="680" y="160" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-35" value="Xms 初始化堆内存" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="680" y="220" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-36" value="Xmn 年轻代大小" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="680" y="280" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-37" value="MetaSpace" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="680" y="340" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-38" value="Xss 初始化线程栈大小" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="680" y="400" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="YUGMLXJwsX0ST7-lgr5c-39" value="DirectMemory" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6a00ff;strokeColor=#3700CC;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="680" y="460" width="120" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
